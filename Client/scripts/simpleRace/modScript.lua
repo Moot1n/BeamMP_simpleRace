@@ -1,0 +1,2 @@
+load("simpleRace")
+registerCoreModule("simpleRace")
