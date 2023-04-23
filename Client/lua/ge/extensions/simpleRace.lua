@@ -69,20 +69,22 @@ local function onUpdate(dt)
 		-- detect end of lap
 		for i = 0, be:getObjectCount()-1 do
 			local veh = be:getObject(i)
-			if canPassRaceline and MPVehicleGE.isOwn(veh:getID()) and distance2D(veh:getPosition(), racelinePos) < racelineRadius*1.5 then --pass the line
-				canPassRaceline = false
-				numLap = numLap + 1
-				local sendObject = {
-					laps = numLap
-				}
-				local strObject = jsonEncode(sendObject)
-				strObject = strObject:gsub(":", ";")
+			if MPVehicleGE.isOwn(veh:getID()) then
+				if canPassRaceline and distance2D(veh:getPosition(), racelinePos) < racelineRadius*1.5 then --pass the line
+					canPassRaceline = false
+					numLap = numLap + 1
+					local sendObject = {
+						laps = numLap
+					}
+					local strObject = jsonEncode(sendObject)
+					strObject = strObject:gsub(":", ";")
 
-				TriggerServerEvent("SRendLap", strObject)
-				-- hideNicknames(true)
-				return
-			elseif canPassRaceline == false and distance2D(veh:getPosition(), racelinePos) > racelineRadius*2 then
-				canPassRaceline = true
+					TriggerServerEvent("SRendLap", strObject)
+					-- hideNicknames(true)
+					return
+				elseif canPassRaceline == false and distance2D(veh:getPosition(), racelinePos) > racelineRadius*2 then
+					canPassRaceline = true
+				end
 			end
 		end
 	end

@@ -43,7 +43,7 @@ end
 
 function initTimeboard()
 	timeboard = {}
-	for k, v in pairs(MP.GetPlayers()) do timeboard[v] = {starttime=os.time(), laps=0} end
+	for k, v in pairs(MP.GetPlayers()) do timeboard[v] = {starttime=os.time(), laps=0, laptimes={}} end
 end
 
 ------------------------------ RACE EVENTS ------------------------------
@@ -60,20 +60,28 @@ function updateTimeboard(playerID, data) -- call at the end of the player lap
 	for i=1,13-#laptimeMsg do
 		laptimeMsg = laptimeMsg.." "
 	end
-	laptimeMsg = laptimeMsg.."] "..os.date('%M:%S', laptime)
+	laptimeMsg = laptimeMsg.."] Lap "..tostring(data.laps).." : "..os.date('%M:%S', laptime)
 
 	timeboard[playerName]['starttime'] = lineCrossing
 	timeboard[playerName]['laps'] = timeboard[playerName]['laps']+1
+	table.insert(timeboard[playerName]['laptimes'], laptime)
 
-	MP.SendChatMessage(-1, laptimeMsg)
+	-- [TODO]
+	-- register for each player if they have finish the race
+	-- when all player have finish the race, display the full scoreboard
 
 	if data.laps >= numLap then
-		MP.TriggerClientEvent(-1, "SRresetRace", tostring(countdownCounter))
+		MP.TriggerClientEvent(playerID, "SRresetRace", tostring(countdownCounter))
+		-- display full timeboard of the player
+		MP.SendChatMessage(-1, "--"..playerName.."--")
+		for k,v in pairs(timeboard[playerName]['laptimes']) do
+		  MP.SendChatMessage(-1, tostring(k)..": "..os.date('%M:%S', v))
+		end
 	end
 end
 
 function doCountdown()
-	if countdownCounter <= 0 then
+	if countdownCounter < 0 then
 		MP.CancelEventTimer("countdownEvent")
 		return
 	end
