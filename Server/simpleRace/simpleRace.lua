@@ -41,16 +41,24 @@ function sendConfig(newcfg)
 	MP.TriggerClientEvent(-1, "SRsetConfig", cfg)
 end
 
+function prettyTime(seconds)
+    local thousandths = seconds * 1000
+    local min = math.floor((thousandths / (60 * 1000))) % 60
+    local sec = math.floor(thousandths / 1000) % 60
+    local ms = math.floor(thousandths % 1000)
+    return string.format("%02d:%02d.%d", min, sec, ms)
+end
+
 function initTimeboard()
 	timeboard = {}
-	for k, v in pairs(MP.GetPlayers()) do timeboard[v] = {starttime=os.time(), laps=0, laptimes={}} end
+	for k, v in pairs(MP.GetPlayers()) do timeboard[v] = {laps=0, laptimes={}} end
 end
 
 function displayTimeboard()
 	for pName, pValues in pairs(timeboard) do
 		MP.SendChatMessage(-1, "--"..pName.."--")
 		for k,v in pairs(pValues['laptimes']) do
-		  MP.SendChatMessage(-1, tostring(k)..": "..os.date('%M:%S', v))
+		  MP.SendChatMessage(-1, tostring(k)..": "..prettyTime(v))
 		end
 	end
 end
@@ -62,16 +70,14 @@ function updateTimeboard(playerID, data) -- call at the end of the player lap
 	data = json.decode(data)
 
 	local playerName = MP.GetPlayerName(playerID)
-	local lineCrossing = os.time()
-	local laptime = lineCrossing-timeboard[playerName]['starttime']
+	local laptime = data.lapTime
 
 	local laptimeMsg = "["..string.sub(playerName,1,12)
 	for i=1,13-#laptimeMsg do
 		laptimeMsg = laptimeMsg.." "
 	end
-	laptimeMsg = laptimeMsg.."] Lap "..tostring(data.laps).." : "..os.date('%M:%S', laptime)
+	laptimeMsg = laptimeMsg.."] Lap "..tostring(data.laps).." : "..prettyTime(laptime)
 
-	timeboard[playerName]['starttime'] = lineCrossing
 	timeboard[playerName]['laps'] = timeboard[playerName]['laps']+1
 	table.insert(timeboard[playerName]['laptimes'], laptime)
 

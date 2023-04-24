@@ -14,6 +14,7 @@ local racelinePos = nil
 local racelineRadius = 1.2
 local canPassRaceline = false
 local numLap = 0
+local lapStartTime = 0
 local timeCounter = 0 -- time, in seconds
 
 -- Helpers
@@ -75,16 +76,19 @@ local function onUpdate(dt)
 					numLap = numLap + 1
 					local sendObject = {
 						laps = numLap
+						lapTime = timeCounter-lapStartTime
 					}
 					local strObject = jsonEncode(sendObject)
 					strObject = strObject:gsub(":", ";")
 
 					TriggerServerEvent("SRendLap", strObject)
+
+					lapStartTime = timeCounter
 					-- hideNicknames(true)
-					return
 				elseif canPassRaceline == false and distance2D(veh:getPosition(), racelinePos) > racelineRadius*2 then
 					canPassRaceline = true
 				end
+				break
 			end
 		end
 	end
@@ -121,6 +125,7 @@ local function startRace(data)
 
 	raceStarted = true
 	numLap = 0
+	lapStartTime = timeCounter
 	print('[SR] Start the race')
 end
 
