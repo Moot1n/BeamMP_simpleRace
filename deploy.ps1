@@ -24,8 +24,8 @@ Compress-Archive @compress
 
 # Copy the client part to the server client folder
 $clientPartServerPath = Join-Path $serverPath '\Resources\Client\'
-Copy-Item -Path .\Client\simpleRace.zip -Destination $clientPartServerPath -PassThru
+Copy-Item -Path .\Client\simpleRace.zip -Destination $clientPartServerPath -PassThru -Force
 
 # Copy the server part to the server folder
 $serverPartServerPath = Join-Path $serverPath '\Resources\Server\'
-Copy-Item -Path .\Server\* -Destination $serverPartServerPath -PassThru -Recurse
+Copy-Item -Path .\Server\* -Destination $serverPartServerPath -PassThru -Recurse -Force
