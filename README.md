@@ -11,6 +11,15 @@ This project is a BeamMP mod that allows you to race with friends on your BeamMP
 
 ## Installation
 
+### Script
+
+Run the script :
+```bat
+.\deploy.ps1 -serverPath path_to_your_server_folder
+```
+
+### Manual
+
 Copy the content of `BeamMP_simpleRace/Server/*` to your server folder `BeamMP_Server/Resources/Server/`.
 
 Go to the `BeamMP_simpleRace/Client` folder and create a zip archive named `simpleRace.zip` and with the following architecture :
