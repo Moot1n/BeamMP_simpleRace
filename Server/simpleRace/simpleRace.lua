@@ -14,7 +14,7 @@ local isRaceGoingOn = false
 
 --client config
 local config = {
-	racelineRadius = 1.5
+	racelineRadius = 2.0
 }
 
 -- internal variables
@@ -46,6 +46,15 @@ function initTimeboard()
 	for k, v in pairs(MP.GetPlayers()) do timeboard[v] = {starttime=os.time(), laps=0, laptimes={}} end
 end
 
+function displayTimeboard()
+	for pName, pValues in pairs(timeboard) do
+		MP.SendChatMessage(-1, "--"..pName.."--")
+		for k,v in pairs(pValues['laptimes']) do
+		  MP.SendChatMessage(-1, tostring(k)..": "..os.date('%M:%S', v))
+		end
+	end
+end
+
 ------------------------------ RACE EVENTS ------------------------------
 
 function updateTimeboard(playerID, data) -- call at the end of the player lap
@@ -66,17 +75,22 @@ function updateTimeboard(playerID, data) -- call at the end of the player lap
 	timeboard[playerName]['laps'] = timeboard[playerName]['laps']+1
 	table.insert(timeboard[playerName]['laptimes'], laptime)
 
-	-- [TODO]
-	-- register for each player if they have finish the race
-	-- when all player have finish the race, display the full scoreboard
+	-- Check if all players have finished the race
+	local isRaceFinished = true
+
+	for pName,pValues in pairs(timeboard) do
+		if pValues['laps'] < numLap then
+			isRaceFinished = false
+			break
+		end
+	end
+
+	if isRaceFinished == true then
+		displayTimeboard()
+	end
 
 	if data.laps >= numLap then
 		MP.TriggerClientEvent(playerID, "SRresetRace", tostring(countdownCounter))
-		-- display full timeboard of the player
-		MP.SendChatMessage(-1, "--"..playerName.."--")
-		for k,v in pairs(timeboard[playerName]['laptimes']) do
-		  MP.SendChatMessage(-1, tostring(k)..": "..os.date('%M:%S', v))
-		end
 	end
 end
 
