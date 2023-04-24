@@ -75,7 +75,7 @@ local function onUpdate(dt)
 					canPassRaceline = false
 					numLap = numLap + 1
 					local sendObject = {
-						laps = numLap
+						laps = numLap,
 						lapTime = timeCounter-lapStartTime
 					}
 					local strObject = jsonEncode(sendObject)

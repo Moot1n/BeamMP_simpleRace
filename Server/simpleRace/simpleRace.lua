@@ -46,7 +46,7 @@ function prettyTime(seconds)
     local min = math.floor((thousandths / (60 * 1000))) % 60
     local sec = math.floor(thousandths / 1000) % 60
     local ms = math.floor(thousandths % 1000)
-    return string.format("%02d:%02d.%d", min, sec, ms)
+    return string.format("%02d:%02d.%03d", min, sec, ms)
 end
 
 function initTimeboard()
@@ -80,6 +80,8 @@ function updateTimeboard(playerID, data) -- call at the end of the player lap
 
 	timeboard[playerName]['laps'] = timeboard[playerName]['laps']+1
 	table.insert(timeboard[playerName]['laptimes'], laptime)
+
+	MP.SendChatMessage(-1, laptimeMsg)
 
 	-- Check if all players have finished the race
 	local isRaceFinished = true

@@ -13,7 +13,19 @@ This project is a BeamMP mod that allows you to race with friends on your BeamMP
 
 ### Script
 
-Run the script :
+Go to the `BeamMP_simpleRace/Client` folder and create a zip archive named `simpleRace.zip` and with the following architecture :
+
+```
+simpleRace.zip
+|-lua
+|    |-ge
+|       |- ...
+|-scripts
+|    |-simpleRace
+|       |- ...
+```
+
+Return to `BeamMP_simpleRace/` and run the script :
 ```bat
 .\deploy.ps1 -serverPath path_to_your_server_folder
 ```

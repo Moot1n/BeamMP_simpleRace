@@ -18,9 +18,10 @@ $compress = @{
   Path = ".\Client\lua", ".\Client\scripts"
   CompressionLevel = "Fastest"
   DestinationPath = ".\Client\simpleRace.zip"
-  Force = $true
+  Update = $true
 }
-Compress-Archive @compress
+# Doesn't work
+# Compress-Archive @compress
 
 # Copy the client part to the server client folder
 $clientPartServerPath = Join-Path $serverPath '\Resources\Client\'
