@@ -149,7 +149,7 @@ function onChatMessage(playerID, name ,chatMessage)
 		MP.TriggerClientEvent(playerID, "SRhideUI", "")
 		stopRace()
 		return 1
-	elseif chatMessage:find("/hideui") then
+	elseif chatMessage:find("/hidetimeboard") then
 		MP.TriggerClientEvent(playerID, "SRhideUI", "")
 		return 1
 	elseif starts_with(chatMessage, "/setlap") then
