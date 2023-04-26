@@ -16,6 +16,7 @@ local canPassRaceline = false
 local numLap = 0
 local lapStartTime = 0
 local timeCounter = 0 -- time, in seconds
+local timeboard = {}
 
 -- Helpers
 
@@ -52,15 +53,60 @@ end
 local function distance2D(pos1, pos2)
 	return math.sqrt(math.pow(pos1.x-pos2.x,2)+math.pow(pos1.y-pos2.y,2))
 end
+function prettyTime(seconds)
+    local thousandths = seconds * 1000
+    local min = math.floor((thousandths / (60 * 1000))) % 60
+    local sec = math.floor(thousandths / 1000) % 60
+    local ms = math.floor(thousandths % 1000)
+    return string.format("%02d:%02d.%03d", min, sec, ms)
+end
 
 -- GUI
 
-local function hideNicknames(hide)
-	MPVehicleGE.hideNicknames(hide)
+local function showScoreboard()
+	gui.showWindow("SRscoreboard")
+end
+local function hideScoreboard()
+	timeboard = {}
+	gui.hideWindow("SRscoreboard")
+end
+local function setupScoreboard()
+	gui_module.initialize(gui)
+	gui.registerWindow("SRscoreboard", imgui.ImVec2(256, 256))
+	print("[SR] ui initialized")
+end
+local function receiveScoreboard(data)
+	data = data:gsub(';',':')
+	data = jsonDecode(data)
+
+	timeboard = data
+end
+local function drawScoreboard(data)
+	if not gui.isWindowVisible("SRscoreboard") then return end
+	gui.setupWindow("SRscoreboard")
+	imgui.Begin("Scoreboard")
+    imgui.SetNextWindowBgAlpha(0.8)
+
+	local thisUser = MPConfig and MPConfig.getNickname() or ""
+
+	imgui.Columns(3, "Bar")
+	for name, pData in spairs(timeboard, function(t,a,b) return (t[b]['laps']*1000 + t[b]['laptimes'][#t[b]['laptimes']]) < (t[a]['laps']*1000 + t[a]['laptimes'][#t[a]['laptimes']]) end) do
+		if name == thisUser then imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), name) --teal if current user
+		else imgui.Text(name) end
+		imgui.NextColumn()
+		imgui.Text(tostring(pData['laps']))
+		imgui.NextColumn()
+		imgui.Text(prettyTime(pData['laptimes'][#pData['laptimes']]))
+		imgui.NextColumn()
+	end
+
+	imgui.Columns(1);
+	imgui.End()
 end
 
 local function onUpdate(dt)
 	timeCounter = timeCounter+dt
+	drawScoreboard()
 	if raceStarted then
 		local racelinePosTop = Point3F(racelinePos.x, racelinePos.y, racelinePos.z+2+mapValue(math.sin(timeCounter*1.5),0,1,0,0.5))
 		local racelinePosBottom = Point3F(racelinePos.x, racelinePos.y, racelinePos.z-1)
@@ -126,16 +172,27 @@ local function startRace(data)
 	raceStarted = true
 	numLap = 0
 	lapStartTime = timeCounter
+	timeboard = {}
+	showScoreboard()
 	print('[SR] Start the race')
+end
+
+local function hideUI(data)
+	hideScoreboard()
 end
 
 if MPGameNetwork then -- just so we dont instantly error out without BeamMP
 	AddEventHandler("SRsetConfig",				setConfig)
 	AddEventHandler("SRresetRace",				resetRace)
 	AddEventHandler("SRstartRace",				startRace)
+	AddEventHandler("SRhideUI",					hideUI)
+	AddEventHandler("SRreceiveScoreboard",		receiveScoreboard)
 end
 
+M.onExtensionLoaded		= setupScoreboard
 M.onUpdate				= onUpdate
+M.showUI				= showScoreboard
+M.hideUI				= hideScoreboard
 
 print("Simple Race client loaded ~~")
 

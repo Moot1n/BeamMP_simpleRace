@@ -83,6 +83,9 @@ function updateTimeboard(playerID, data) -- call at the end of the player lap
 
 	MP.SendChatMessage(-1, laptimeMsg)
 
+	local jsonScoreboard = json.encode(timeboard):gsub(':',';')
+	MP.TriggerClientEvent(-1, "SRreceiveScoreboard", jsonScoreboard)
+
 	-- Check if all players have finished the race
 	local isRaceFinished = true
 
@@ -143,7 +146,11 @@ function onChatMessage(playerID, name ,chatMessage)
 		startCountdown()
 		return 1
 	elseif chatMessage:find("/stoprace") then
+		MP.TriggerClientEvent(playerID, "SRhideUI", "")
 		stopRace()
+		return 1
+	elseif chatMessage:find("/hideui") then
+		MP.TriggerClientEvent(playerID, "SRhideUI", "")
 		return 1
 	elseif starts_with(chatMessage, "/setlap") then
 		numLap = tonumber((chatMessage:gsub("/setlap ", "")))
@@ -153,6 +160,7 @@ function onChatMessage(playerID, name ,chatMessage)
 		MP.SendChatMessage(playerID, "/startrace				[SR] Start a race")
 		MP.SendChatMessage(playerID, "/stoprace				[SR] Stop the race")
 		MP.SendChatMessage(playerID, "/setlap [nb of laps]	[SR] Set the number of lap for the race")
+		MP.SendChatMessage(playerID, "/hideui					[SR] Hide the scoreboard")
 		return 1
 	end
 end

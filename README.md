@@ -61,4 +61,5 @@ List of commands :
 /startrace               [SR] Start a race
 /stoprace                [SR] Stop the race
 /setlap [nb_laps]        [SR] Set the number of lap for the race
+/hideui					[SR] Hide the scoreboard
 ```
