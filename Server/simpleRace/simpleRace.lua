@@ -153,8 +153,13 @@ function onChatMessage(playerID, name ,chatMessage)
 		MP.TriggerClientEvent(playerID, "SRhideUI", "")
 		return 1
 	elseif starts_with(chatMessage, "/setlap") then
-		numLap = tonumber((chatMessage:gsub("/setlap ", "")))
-		MP.SendChatMessage(-1, playerName.." set the lap number to "..tostring(numLap))
+		tempNumLap = tonumber((chatMessage:gsub("/setlap ", "")))
+		if not tempNumLap == nil then
+			numLap = tempNumLap
+			MP.SendChatMessage(-1, playerName.." set the lap number to "..tostring(numLap))
+		else
+			MP.SendChatMessage(-1, playerName.." the lap number is invalid, use /help")
+		end
 		return 1
 	elseif starts_with(chatMessage, "/help") then
 		MP.SendChatMessage(playerID, "/startrace				[SR] Start a race")
