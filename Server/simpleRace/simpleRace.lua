@@ -11,10 +11,10 @@ local json = require("json")
 local countdownCounter = 5
 local numLap = 1
 local isRaceGoingOn = false
-
 --client config
 local config = {
-	racelineRadius = 2.0
+	racelineRadius = 2.0;
+	racelinePos = {0,0,0}
 }
 
 -- internal variables
@@ -151,6 +151,29 @@ function onChatMessage(playerID, name ,chatMessage)
 		return 1
 	elseif chatMessage:find("/hidetimeboard") then
 		MP.TriggerClientEvent(playerID, "SRhideUI", "")
+		return 1
+	elseif chatMessage:find("/setfinish") then
+		veh = MP.GetPlayerVehicles(playerID)
+		
+		
+		local n=0
+		for k,v in pairs(veh) do
+		  n=k
+		  break
+		end
+		
+		
+		local veh_string = veh[n]
+		local veh_json = nil
+		local find_start = string.find(veh_string, "{")
+		veh_string = string.sub(veh_string,find_start,-1)
+		--MP.SendChatMessage(-1, veh_string)
+		--veh_json = string.gsub(veh[n], ";", ":")
+		veh_json = json.decode(veh_string)
+		
+		local veh_position = veh_json["pos"]
+		config.racelinePos = veh_position
+		MP.SendChatMessage(-1, json.encode(veh_position))
 		return 1
 	elseif starts_with(chatMessage, "/setlap") then
 		tempNumLap = tonumber((chatMessage:gsub("/setlap ", "")))
