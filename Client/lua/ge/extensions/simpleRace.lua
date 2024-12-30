@@ -10,7 +10,7 @@ local gui = {setupEditorGuiTheme = nop}
 local imgui = ui_imgui
 
 local raceStarted = false
-local racelinePos = nil
+local racelinePos = vec3(0,0,0)
 local racelineRadius = 1.2
 local canPassRaceline = false
 local numLap = 0
@@ -87,20 +87,20 @@ local function drawScoreboard(data)
 	imgui.Begin("Scoreboard")
     imgui.SetNextWindowBgAlpha(0.8)
 
-	local thisUser = MPConfig and MPConfig.getNickname() or ""
+	--local thisUser = MPConfig and MPConfig.getNickname() or ""
 
-	imgui.Columns(3, "Bar")
-	for name, pData in spairs(timeboard, function(t,a,b) return (t[b]['laps']*1000 + t[b]['laptimes'][#t[b]['laptimes']]) < (t[a]['laps']*1000 + t[a]['laptimes'][#t[a]['laptimes']]) end) do
-		if name == thisUser then imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), name) --teal if current user
-		else imgui.Text(name) end
-		imgui.NextColumn()
-		imgui.Text(tostring(pData['laps']))
-		imgui.NextColumn()
-		imgui.Text(prettyTime(pData['laptimes'][#pData['laptimes']]))
-		imgui.NextColumn()
-	end
+	--imgui.Columns(3, "Bar")
+	--for name, pData in spairs(timeboard, function(t,a,b) return (t[b]['laps']*1000 + t[b]['laptimes'][#t[b]['laptimes']]) < (t[a]['laps']*1000 + t[a]['laptimes'][#t[a]['laptimes']]) end) do
+	--	if name == thisUser then imgui.TextColored(imgui.ImVec4(0.0, 1.0, 1.0, 1.0), name) --teal if current user
+	--	else imgui.Text(name) end
+	--	imgui.NextColumn()
+	--	imgui.Text(tostring(pData['laps']))
+	--	imgui.NextColumn()
+	--	imgui.Text(prettyTime(pData['laptimes'][#pData['laptimes']]))
+	--	imgui.NextColumn()
+	--end
 
-	imgui.Columns(1);
+	--imgui.Columns(1);
 	imgui.End()
 end
 
@@ -149,6 +149,15 @@ local function setConfig(config)
 	dump(config)
 
 	racelineRadius = config.racelineRadius and tonumber(config.racelineRadius) or racelineRadius
+	racelinePos = vec3(config.racelinePos[1],config.racelinePos[2],config.racelinePos[3])
+	--print(racelinePos)
+	--print(config.racelinePos)
+	--print(config.racelinePos[0])
+	--for k,v in pairs(config.racelinePos) do
+	--	print(k)
+	--	break
+	--end
+	
 end
 
 local function resetRace(data)
@@ -167,7 +176,7 @@ local function startRace(data)
 
 	local vid = be:getPlayerVehicleID(0)
 	local vehicle = be:getObjectByID(vid)
-	racelinePos = vehicle:getPosition()
+	
 
 	raceStarted = true
 	numLap = 0
@@ -195,5 +204,5 @@ M.showUI				= showScoreboard
 M.hideUI				= hideScoreboard
 
 print("Simple Race client loaded ~~")
-
+print("Simplasdade Race client loaded ~~")
 return M
