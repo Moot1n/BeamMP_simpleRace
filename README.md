@@ -62,4 +62,5 @@ List of commands :
 /stoprace                [SR] Stop the race
 /setlap [nb_laps]        [SR] Set the number of lap for the race
 /hidetimeboard			[SR] Hide the timeboard
+/setfinish              [SR] Sets the finish line to the spawn position of your vehicle. For point to point races.
 ```
